@@ -64,3 +64,12 @@ $app->get('/devices/{device}/cmds/{action}', function ($request, $response, $arg
     }
 });
 
+// DEVICE DISCOVERY
+$app->get('/devices', function ($request, $response, $args) {
+    $devices = require __DIR__ . '/../src/tarla_devices.php';
+
+    // Just output the declared device data as-is
+    $discoveryResponse = $response->withJson($devices, 200, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
+
+	return $discoveryResponse;
+});
