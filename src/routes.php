@@ -14,7 +14,7 @@ $app->get('/devices/{device}/cmds/{action}', function ($request, $response, $arg
 	return $errorResponse;
     }
 
-    $deviceURL = $devices[$device];
+    $deviceURL = $devices[$device]['_url'];
 
     if(substr($deviceURL, 0, 7) === "http://"){
 
@@ -68,8 +68,14 @@ $app->get('/devices/{device}/cmds/{action}', function ($request, $response, $arg
 $app->get('/devices', function ($request, $response, $args) {
     $devices = require __DIR__ . '/../src/tarla_devices.php';
 
-    // Just output the declared device data as-is
-    $discoveryResponse = $response->withJson($devices, 200, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
+    // Hide private data
+    $info = [];
+    foreach ($devices as $deviceName => $deviceData) {
+        unset($deviceData['_url']);
+        $info[$deviceName] = $deviceData;
+    }
+
+    $discoveryResponse = $response->withJson($info, 200, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
 
 	return $discoveryResponse;
 });
